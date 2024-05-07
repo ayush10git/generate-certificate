@@ -55,10 +55,10 @@ const Certificate = () => {
     try {
       const response = await axios.delete(`${server}/delete/${id}`);
       if (response.status === 200) {
-        alert("Certificate generated successfully.");
+        alert("Certificate deleted successfully.");
         setCertificates(certificates.filter((cert) => cert._id !== id));
       } else {
-        alert("Failed to generate certificate");
+        alert("Failed to delete certificate");
       }
     } catch (error) {
       console.error("Error deleting certificate:", error);
