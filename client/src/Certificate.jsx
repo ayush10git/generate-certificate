@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./cerificate.css";
 import { GrCertificate } from "react-icons/gr";
+import { MdDeleteOutline } from "react-icons/md";
 
 const Certificate = () => {
   const [name, setName] = useState("");
@@ -20,9 +21,7 @@ const Certificate = () => {
   useEffect(() => {
     const fetchCertificates = async () => {
       try {
-        const response = await axios.get(
-          `${server}/get`
-        );
+        const response = await axios.get(`${server}/get`);
         console.log(response.data.certificates);
         setCertificates(response.data.certificates);
       } catch (error) {
@@ -36,15 +35,12 @@ const Certificate = () => {
   const generateCertificate = async () => {
     try {
       const formattedDate = formatDate(date);
-      const response = await axios.post(
-        `${server}/generate`,
-        {
-          name,
-          email,
-          course,
-          date: formattedDate,
-        }
-      );
+      const response = await axios.post(`${server}/generate`, {
+        name,
+        email,
+        course,
+        date: formattedDate,
+      });
       if (response.status === 201) {
         alert("Certificate generated successfully.");
       } else {
@@ -56,9 +52,26 @@ const Certificate = () => {
     }
   };
 
+  const deleteCertificate = async (id) => {
+    try {
+      const response = await axios.delete(`${server}/delete/${id}`);
+      if (response.status === 200) {
+        alert("Certificate generated successfully.");
+        setCertificates(certificates.filter((cert) => cert._id !== id));
+      } else {
+        alert("Failed to generate certificate");
+      }
+    } catch (error) {
+      console.error("Error deleting certificate:", error);
+      alert("Failed to delete certificate");
+    }
+  };
+
   return (
     <div className="main">
-      <div className="container">
+      <div
+        className={certificates.length === 0 ? "center-container" : "container"}
+      >
         <h1>Certificate Generator</h1>
         <div className="input-container">
           <label htmlFor="name">Name</label>
@@ -102,6 +115,10 @@ const Certificate = () => {
             <h2>Generated Certificates</h2>
             {certificates.map((details, index) => (
               <div className="certificate-icon" key={index}>
+                <MdDeleteOutline
+                  className="delete-icon"
+                  onClick={() => deleteCertificate(details._id)}
+                />
                 <a
                   className="drive-url"
                   href={details.driveUrl}
@@ -109,6 +126,7 @@ const Certificate = () => {
                   rel="noopener noreferrer"
                 >
                   <GrCertificate />
+
                   <p>{details.name}</p>
                 </a>
               </div>

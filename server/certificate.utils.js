@@ -78,7 +78,6 @@ async function addDetailsToCertificate(template, details) {
   return template;
 }
 
-
 async function generateModifiedPDF(template) {
   return template.save();
 }
@@ -135,5 +134,28 @@ async function uploadPDFToDrive(authClient, pdfBuffer, name) {
   });
 }
 
-module.exports = {loadCertificateTemplate, uploadPDFToDrive, authorize, generateModifiedPDF, addDetailsToCertificate}
+const deleteFileFromDrive = async (authClient, fileId) => {
+  try {
+    const drive = google.drive({ version: "v3", auth: authClient });
+    await drive.files.delete({ fileId });
+  } catch (error) {
+    console.error("Error deleting file from Google Drive:", error);
+    throw new Error("Failed to delete file from Google Drive");
+  }
+};
 
+const extractFileIdFromUrl = (driveUrl) => {
+  const regex = /\/file\/d\/([^\/]+)/;
+  const match = driveUrl.match(regex);
+  return match ? match[1] : null;
+};
+
+module.exports = {
+  loadCertificateTemplate,
+  uploadPDFToDrive,
+  authorize,
+  generateModifiedPDF,
+  addDetailsToCertificate,
+  deleteFileFromDrive,
+  extractFileIdFromUrl,
+};
