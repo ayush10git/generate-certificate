@@ -22,7 +22,6 @@ const Certificate = () => {
     const fetchCertificates = async () => {
       try {
         const response = await axios.get(`${server}/get`);
-        console.log(response.data.certificates);
         setCertificates(response.data.certificates);
       } catch (error) {
         console.error("Error fetching certificates:", error);
